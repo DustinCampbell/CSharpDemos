@@ -1,7 +1,9 @@
 ﻿global using System.Collections.Immutable;
 global using static System.Console;
 
+#pragma warning disable CS9113 // Parameter is unread.
 public class Person(string name)
+#pragma warning restore CS9113 // Parameter is unread.
 {
 }
 
