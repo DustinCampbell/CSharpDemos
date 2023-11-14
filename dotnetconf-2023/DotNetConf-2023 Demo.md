@@ -234,7 +234,39 @@ public class Student(string name, int id, Grade[] grades) : Person(name)
 }
 ```
 
-**Constructor Chaining**
+Let's talk a little bit about constructor chaining. `this` and `base` initializers have existed since C# 1.0 and it's a best practice to have a "most important" constructor that all other constructors chain to. Otherwise, type construction can become a bit of a mess!
+
+Primary constructors really enforce that best practice. Every constructor _must_ eventually chain to the primary constructor.
+
+> Add a new constructor that takes a single `name` parameter.
+
+```C#
+public Student(string name)
+{
+}
+```
+
+There's an error on `Student` here that tells us that we need to chain. Well, we know there's a base constructor that takes a single `name` parameter. Maybe we can use that.
+
+> Add `: base(name)` after the constructor declaration.
+
+```C#
+public Student(string name) : base(name)
+{
+}
+```
+
+Now there's an error on `base` telling us that only `this` constructor initializers are allowed. Ultimately, we need to chain so that the primary constructor will _always_ be called. Otherwise, there wouldn't be a guarantee that the primary constructor parameters have values when the type is constructed.
+
+> Change `base(name)` to `this(name, 0)`.
+
+```C#
+public Student(string name) : this(name, 0)
+{
+}
+```
+
+Now the constructor chaining properly resolves to the primary constructor (via another constructor).
 
 ## Collection Expressions
 
