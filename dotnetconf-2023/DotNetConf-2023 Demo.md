@@ -162,3 +162,20 @@ can result in the same field being stored in two separate fields, which is proba
 
 ## Collection Expressions
 
+Raw Notes:
+
+- Change “grades” parameter to a `List<Grade>` and show that they don’t work anymore
+    - Now we have to fix up the call sites.
+- Change “grades” to an `ImmutableList<Grade>` and the errors are completely different.
+- Change “grades” to an `ImmutableArray<Grade>` and the errors go away but it’s awful and is going to fail at runtime! Try to run it and show how it fails.
+- Change the first callsite to a collection expression manually
+- Change the second callsite to a collection expression using the code fix.
+- Talk about syntax correspondence with list patterns
+- Talk about spreads by bringing in `Grades.Dustin`.
+- Now, how is the sausage made.
+- F12 on `ImmutableArray<T>` to show the `CollectionBuilder` attribute.
+- F12 on `ImmutableArray` to show the `Create` method that it will call.
+- Cycle through different types, ImmutableList, List, array, and finally interfaces, such as `IList<T>`.
+- There are a couple of things they don’t yet do.
+    - There’s no “natural type” so that don’t work with var.
+    - Dictionary expressions
