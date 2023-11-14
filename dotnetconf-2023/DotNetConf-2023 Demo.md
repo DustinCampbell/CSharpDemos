@@ -171,7 +171,68 @@ public int Id => name.Length;
 
 The reason that `name` doesn't appear in the list and is squiggled with a warning is because the C# language service is trying to avoid a "double capture". This happens when you deliberately capture a primary constructor parameter value in a field or property, and then use the parameter again elsewhere and the compiler automatically captures it. This can result in the same field being stored in two separate fields, which is probably unintended.
 
-**Refactor to regular constructor with fields and refactor back to primary constructor with and without fields**
+So, how can we avoid double capture? Well, if you're in a situation where it's unavoidable, you can always declare a field yourself.
+
+> Create a new readonly field called `name` and initialized with the `name` parameter.
+
+```C#
+private readonly string name = name; 
+```
+
+This resolves all of the double capture warnings but things are actually a bit different.
+
+> Hover over `name` in `name.Length` to show that it now binds to the field, rather than the parameter.
+
+Of course, we still have a warning because `id` is unused, so we should put things back the way they were.
+
+> Change `name.Length` back to `id`.
+
+```C#
+public int Id => id;
+```
+
+Primary constructors are fantastic for providing brevity when there isn't a lot of logic in the constructor. However, if you want to add more logic, such as sophisticated argument validation, it can be pretty painful to manually refactoring the code back to a regular constructor. Fortunately, we provide a few refactorings that make it easy to go back and forth between primary and regular constructors.
+
+> Place the editor caret on `Student` in the primary constructor and bring up the light bulb menu. Select "Convert to regular constructor" to show the code diff. Click the refactoring to apply it.
+
+```C#
+public class Student : Person
+{
+    public Student(string name, int id, Grade[] grades) : base(name)
+    {
+        this.id = id;
+        this.grades = grades;
+        this.name = name;
+        Name = name;
+    }
+
+    public Student(string name, int id) : this(name, id, Array.Empty<Grade>()) { }
+
+    private readonly string name;
+    private readonly int id;
+    private readonly decimal[] grades;
+```
+
+The refactoring has done all of the hard work for us. And now, there are two possible refactorings to convert back to a primary constructor.
+
+> Place the editor caret on `Student` in the first constructor and bring up the light bulb menu. Note that there are two refactorings available to convert to a primary constructor: one that removes fields and one that doesn't. Apply the version that removes fields and the code will be changed to what we had before.
+
+```C#
+public class Student(string name, int id, Grade[] grades) : Person(name)
+{
+    public Student(string name, int id) : this(name, id, Array.Empty<Grade>()) { }
+
+    public string Name { get; set; } = name;
+    public int Id => id;
+
+    public Grade GPA => grades switch
+    {
+        [] => 4.0m,
+        [var grade] => grade,
+        [.. var all] => all.Average()
+    };
+}
+```
 
 **Constructor Chaining**
 
